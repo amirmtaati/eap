@@ -101,14 +101,13 @@ Local commits only. Master runs gates itself. Reviewer is never the implementer.
 :SCOPE: oa-engine/internal/cli/** oa-engine/cmd/oa/**
 :END:
 ** M3 Emacs client
-*** TODO L0 Skeleton, fake engine, vendored fixtures, sync-fixtures
+*** DONE L0-L8 Client implementation (oa-config, oa-doc, oa-engine, oa-ui, oa-mode)
 :PROPERTIES:
 :REPO: oa-emacs
 :ROLE: implementer-elisp
-:DEPENDS: C0
+:DEPENDS: E4
 :SCOPE: oa-emacs/**
 :END:
-(… L1–L9 per MASTER-SPEC.md section 12, M3 table …)
 ** M4 Integration and release
 *** TODO X1 E2E suite: real engine + mock router + Emacs batch
 :PROPERTIES:
