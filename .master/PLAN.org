@@ -1,0 +1,120 @@
+#+TITLE: eap master plan
+#+TODO: TODO(t) DOING(d) TESTING(e) REVIEW(r) FIX(f) | DONE(x) BLOCKED(b) CANCELLED(c)
+
+* Context :ctx:
+** Specs
+MASTER-SPEC.md > oa-engine/SPEC.md and oa-emacs/SPEC.md (cite, never paste). Frozen contracts: MASTER-SPEC.md section 13.
+** Rules
+Local commits only. Master runs gates itself. Reviewer is never the implementer.
+
+* Milestones
+** M0 Bootstrap
+*** DONE B0 Workspace skeleton, specs, role files, ledger
+:PROPERTIES:
+:REPO: workspace
+:ROLE: master
+:DEPENDS:
+:SCOPE: .master/** AGENTS.md .gitignore */SPEC.md
+:END:
+*** TODO B0b Review repo specs against MASTER-SPEC (contracts mirrored, digests complete)
+:PROPERTIES:
+:REPO: workspace
+:ROLE: architect
+:DEPENDS: B0
+:END:
+*** TODO B1 Per-directory Makefile gate verification
+:PROPERTIES:
+:REPO: both
+:ROLE: implementer-go, implementer-elisp
+:DEPENDS: B0
+:END:
+** M1 Engine core (parse → prompt)
+*** DONE G1 Org parser, keys, hashes (internal/org)
+:PROPERTIES:
+:REPO: oa-engine
+:ROLE: implementer-go
+:DEPENDS: B1
+:SCOPE: oa-engine/internal/org/**
+:END:
+*** DONE G2 Snapshot persistence (internal/snapshot)
+:PROPERTIES:
+:REPO: oa-engine
+:ROLE: implementer-go
+:DEPENDS: G1
+:SCOPE: oa-engine/internal/snapshot/**
+:END:
+*** DONE G3 Delta + focus resolution (internal/delta)
+:PROPERTIES:
+:REPO: oa-engine
+:ROLE: implementer-go
+:DEPENDS: G2
+:SCOPE: oa-engine/internal/delta/**
+:END:
+*** DONE G4 Context selection (internal/ctxsel)
+:PROPERTIES:
+:REPO: oa-engine
+:ROLE: implementer-go
+:DEPENDS: G3
+:SCOPE: oa-engine/internal/ctxsel/**
+:END:
+*** DONE G5 Prompt assembly (internal/prompt)
+:PROPERTIES:
+:REPO: oa-engine
+:ROLE: implementer-go
+:DEPENDS: G4
+:SCOPE: oa-engine/internal/prompt/**
+:END:
+*** DONE G8 CLI: parse/snapshot/prompt/version + exit codes (internal/cli, cmd/oa)
+:PROPERTIES:
+:REPO: oa-engine
+:ROLE: implementer-go
+:DEPENDS: G5
+:SCOPE: oa-engine/internal/cli/** oa-engine/cmd/oa/**
+:END:
+** M2 Provider and contract
+*** TODO C0 Contract freeze: docs/protocol.md + testdata/protocol/ goldens
+:PROPERTIES:
+:REPO: oa-engine
+:ROLE: architect, implementer-go
+:DEPENDS: B1
+:SCOPE: oa-engine/docs/** oa-engine/testdata/protocol/**
+:END:
+*** TODO E2 internal/events encoder + oa-mockrouter
+:PROPERTIES:
+:REPO: oa-engine
+:ROLE: implementer-go
+:DEPENDS: C0
+:SCOPE: oa-engine/internal/events/** oa-engine/cmd/oa-mockrouter/**
+:END:
+*** TODO E3 internal/provider: models list, SSE chat, error mapping
+:PROPERTIES:
+:REPO: oa-engine
+:ROLE: implementer-go
+:DEPENDS: E2
+:SCOPE: oa-engine/internal/provider/**
+:END:
+*** TODO E4 oa models / oa chat commands, cancellation, security refusal
+:PROPERTIES:
+:REPO: oa-engine
+:ROLE: implementer-go
+:DEPENDS: E3, G8
+:SCOPE: oa-engine/internal/cli/** oa-engine/cmd/oa/**
+:END:
+** M3 Emacs client
+*** TODO L0 Skeleton, fake engine, vendored fixtures, sync-fixtures
+:PROPERTIES:
+:REPO: oa-emacs
+:ROLE: implementer-elisp
+:DEPENDS: C0
+:SCOPE: oa-emacs/**
+:END:
+(… L1–L9 per MASTER-SPEC.md section 12, M3 table …)
+** M4 Integration and release
+*** TODO X1 E2E suite: real engine + mock router + Emacs batch
+:PROPERTIES:
+:REPO: both
+:ROLE: integrator
+:DEPENDS: E4, L8
+:END:
+
+* Agent :agent:
