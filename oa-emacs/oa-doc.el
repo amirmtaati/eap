@@ -13,10 +13,12 @@
 (require 'subr-x)
 
 (defun oa-doc-normalize-response (response-text target-level)
-  "Normalize Org headings in RESPONSE-TEXT so shallowest level matches TARGET-LEVEL.
-Headings inside block delimiters (`#+BEGIN_...' and `#+END_...') are untouched.
+  "Normalize Org headings in RESPONSE-TEXT to TARGET-LEVEL.
+Headings inside block delimiters (`#+BEGIN_...' and `#+END_...') are
+untouched.
 Deliberate simplification: single regex scan with block state tracker.
-ponytail: simple line scanner; switch to org-element AST if complex nested drawers needed."
+ponytail: simple line scanner; switch to org-element AST if complex
+nested drawers needed."
   (let* ((lines (split-string response-text "\n"))
          (in-block nil)
          (min-depth nil))

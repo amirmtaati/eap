@@ -13,6 +13,7 @@
 (require 'seq)
 (require 'auth-source)
 (require 'subr-x)
+(require 'url-parse)
 
 (defgroup oa nil
   "Org Agent interface."

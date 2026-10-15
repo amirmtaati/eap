@@ -1,4 +1,4 @@
-EMACS ?= emacs
+EMACS ?= $(shell which emacs 2>/dev/null || echo "flatpak run org.gnu.emacs")
 
 .PHONY: test compile clean
 

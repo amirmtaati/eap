@@ -98,29 +98,29 @@ Returns cons (EXIT-CODE . OUTPUT-OR-ERROR)."
     (setq string (concat partial string))
     (let ((lines (split-string string "\n")))
       ;; Last element is either empty (ended on \n) or incomplete
-      (set-process-get proc :partial-line (car (last lines)))
+      (process-put proc :partial-line (car (last lines)))
       (dolist (line (butlast lines))
         (unless (string-empty-p (string-trim line))
           (condition-case err
               (let* ((event (json-parse-string line :object-type 'plist))
                      (type (plist-get event :event)))
                 (pcase type
-                  ("start" (when-let ((cb (plist-get callbacks :on-start)))
+                  ("start" (when-let* ((cb (plist-get callbacks :on-start)))
                              (funcall cb event)))
-                  ("delta" (when-let ((cb (plist-get callbacks :on-delta)))
+                  ("delta" (when-let* ((cb (plist-get callbacks :on-delta)))
                              (funcall cb (plist-get event :text))))
-                  ("usage" (when-let ((cb (plist-get callbacks :on-usage)))
+                  ("usage" (when-let* ((cb (plist-get callbacks :on-usage)))
                              (funcall cb
                                       (plist-get event :prompt_tokens)
                                       (plist-get event :completion_tokens))))
-                  ("done" (when-let ((cb (plist-get callbacks :on-done)))
+                  ("done" (when-let* ((cb (plist-get callbacks :on-done)))
                             (funcall cb (plist-get event :finish_reason))))
-                  ("error" (when-let ((cb (plist-get callbacks :on-error)))
+                  ("error" (when-let* ((cb (plist-get callbacks :on-error)))
                              (funcall cb
                                       (plist-get event :kind)
                                       (plist-get event :message))))))
             (error
-             (when-let ((cb (plist-get callbacks :on-error)))
+             (when-let* ((cb (plist-get callbacks :on-error)))
                (funcall cb "bad_response" (format "JSON decode error: %s" err))))))))))
 
 (defun oa-engine--sentinel (proc event)
@@ -128,7 +128,7 @@ Returns cons (EXIT-CODE . OUTPUT-OR-ERROR)."
   (let ((callbacks (process-get proc :callbacks)))
     (unless (process-live-p proc)
       (let ((code (process-exit-status proc)))
-        (when-let ((cb (plist-get callbacks :on-exit)))
+        (when-let* ((cb (plist-get callbacks :on-exit)))
           (funcall cb code event))))))
 
 (defun oa-engine-start-chat (text url model snapshot-path &optional focus-line callbacks)

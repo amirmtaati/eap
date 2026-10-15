@@ -15,6 +15,14 @@
 (require 'oa-config)
 (require 'oa-engine)
 
+(declare-function oa-send "oa" (&optional focus-line))
+(declare-function oa-send-focus "oa" ())
+(declare-function oa-preview "oa" (&optional focus-line))
+(declare-function oa-accept "oa" ())
+(declare-function oa-cancel "oa" ())
+(declare-function oa-add-endpoint "oa" ())
+(declare-function oa-refresh-models "oa" ())
+
 (defvar-local oa-ui--current-state "idle"
   "Current request state string for header line.")
 

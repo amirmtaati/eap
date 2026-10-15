@@ -156,81 +156,81 @@ FOCUS-LINE optionally restricts context to enclosing headline."
   (let ((ep (oa-config-active-endpoint)))
     (unless ep
       (oa-add-endpoint)
-      (setq ep (oa-config-active-endpoint))))
-  (unless (and ep (plist-get ep :selected-model))
-    (oa-select-model)
-    (setq ep (oa-config-active-endpoint)))
-  (when (and oa--active-process (process-live-p oa--active-process))
-    (if (y-or-n-p "A request is already running. Cancel it and restart? ")
-        (oa-cancel)
-      (user-error "Aborted")))
-  (let* ((orig-buf (current-buffer))
-         (proj-name (oa--project-name))
-         (snap-path (oa--snapshot-path))
-         (sent-text (oa-doc-capture-buffer orig-buf))
-         (model (plist-get ep :selected-model))
-         (url (plist-get ep :url)))
-    (setq oa--last-sent-text sent-text)
-    (setq oa--last-response-text "")
-    (setq oa--last-topic
-          (if focus-line
-              (save-excursion
-                (goto-line focus-line)
-                (org-get-heading t t t t))
-            "changes"))
-    ;; Check delta with prompt call
-    (let ((prompt-res (oa-engine-run-prompt sent-text snap-path focus-line)))
-      (when (= (car prompt-res) 2)
-        (user-error "Nothing new to send. Use C-c a f to send the subtree at point"))
-      (when (/= (car prompt-res) 0)
-        (user-error "Engine prompt error: %s" (cdr prompt-res)))
-      ;; Confirm before send
-      (pcase oa-confirm-before-send
-        ('summary
-         (unless (y-or-n-p (format "Send changes to %s (%s)? " (plist-get ep :name) model))
-           (user-error "Cancelled")))
-        ('preview
-         (oa-preview focus-line)
-         (unless (y-or-n-p "Send prompt? ")
-           (user-error "Cancelled")))))
-    ;; Dispatch chat stream
-    (let* ((out-buf (oa-ui-get-output-buffer proj-name)))
-      (oa-ui-show-output proj-name)
-      (oa-ui-insert-header out-buf model ep 0 1)
-      (setq oa--active-process
-            (oa-engine-start-chat
-             sent-text url model snap-path focus-line
-             (list
-              :on-start
-              (lambda (ev)
-                (when (buffer-live-p out-buf)
-                  (with-current-buffer out-buf
-                    (setq oa-ui--current-state "streaming")
-                    (force-mode-line-update))))
-              :on-delta
-              (lambda (txt)
-                (with-current-buffer orig-buf
-                  (setq oa--last-response-text
-                        (concat oa--last-response-text txt)))
-                (oa-ui-append-stream out-buf txt))
-              :on-done
-              (lambda (_reason)
-                (when (buffer-live-p out-buf)
-                  (with-current-buffer out-buf
-                    (setq oa-ui--current-state "done")
-                    (force-mode-line-update)))
-                (message "Response complete.")
-                (pcase oa-accept-mode
-                  ('auto (with-current-buffer orig-buf (oa-accept)))
-                  ('ask (when (y-or-n-p "Accept response into the document? ")
-                          (with-current-buffer orig-buf (oa-accept))))))
-              :on-error
-              (lambda (kind msg)
-                (when (buffer-live-p out-buf)
-                  (with-current-buffer out-buf
-                    (setq oa-ui--current-state (format "error: %s" kind))
-                    (force-mode-line-update)))
-                (message "Request failed (%s): %s" kind msg))))))))
+      (setq ep (oa-config-active-endpoint)))
+    (unless (and ep (plist-get ep :selected-model))
+      (oa-select-model)
+      (setq ep (oa-config-active-endpoint)))
+    (when (and oa--active-process (process-live-p oa--active-process))
+      (if (y-or-n-p "A request is already running. Cancel it and restart? ")
+          (oa-cancel)
+        (user-error "Aborted")))
+    (let* ((orig-buf (current-buffer))
+           (proj-name (oa--project-name))
+           (snap-path (oa--snapshot-path))
+           (sent-text (oa-doc-capture-buffer orig-buf))
+           (model (plist-get ep :selected-model))
+           (url (plist-get ep :url)))
+      (setq oa--last-sent-text sent-text)
+      (setq oa--last-response-text "")
+      (setq oa--last-topic
+            (if focus-line
+                (save-excursion
+                  (goto-line focus-line)
+                  (org-get-heading t t t t))
+              "changes"))
+      ;; Check delta with prompt call
+      (let ((prompt-res (oa-engine-run-prompt sent-text snap-path focus-line)))
+        (when (= (car prompt-res) 2)
+          (user-error "Nothing new to send. Use C-c a f to send the subtree at point"))
+        (when (/= (car prompt-res) 0)
+          (user-error "Engine prompt error: %s" (cdr prompt-res)))
+        ;; Confirm before send
+        (pcase oa-confirm-before-send
+          ('summary
+           (unless (y-or-n-p (format "Send changes to %s (%s)? " (plist-get ep :name) model))
+             (user-error "Cancelled")))
+          ('preview
+           (oa-preview focus-line)
+           (unless (y-or-n-p "Send prompt? ")
+             (user-error "Cancelled")))))
+      ;; Dispatch chat stream
+      (let* ((out-buf (oa-ui-get-output-buffer proj-name)))
+        (oa-ui-show-output proj-name)
+        (oa-ui-insert-header out-buf model ep 0 1)
+        (setq oa--active-process
+              (oa-engine-start-chat
+               sent-text url model snap-path focus-line
+               (list
+                :on-start
+                (lambda (_ev)
+                  (when (buffer-live-p out-buf)
+                    (with-current-buffer out-buf
+                      (setq oa-ui--current-state "streaming")
+                      (force-mode-line-update))))
+                :on-delta
+                (lambda (txt)
+                  (with-current-buffer orig-buf
+                    (setq oa--last-response-text
+                          (concat oa--last-response-text txt)))
+                  (oa-ui-append-stream out-buf txt))
+                :on-done
+                (lambda (_reason)
+                  (when (buffer-live-p out-buf)
+                    (with-current-buffer out-buf
+                      (setq oa-ui--current-state "done")
+                      (force-mode-line-update)))
+                  (message "Response complete.")
+                  (pcase oa-accept-mode
+                    ('auto (with-current-buffer orig-buf (oa-accept)))
+                    ('ask (when (y-or-n-p "Accept response into the document? ")
+                            (with-current-buffer orig-buf (oa-accept))))))
+                :on-error
+                (lambda (kind msg)
+                  (when (buffer-live-p out-buf)
+                    (with-current-buffer out-buf
+                      (setq oa-ui--current-state (format "error: %s" kind))
+                      (force-mode-line-update)))
+                  (message "Request failed (%s): %s" kind msg)))))))))
 
 ;;;###autoload
 (defun oa-send-focus ()
