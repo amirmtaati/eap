@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "timestamp": "2026-10-15T09:06:25Z",
+  "nodes": {
+    "agent": {
+      "content_hash": "1e9d976f255722d216c08b2a6237b9cbebd2a1b92f6551b4f3744fee1009ce88",
+      "subtree_hash": "77bb6225c80d84f2c1fcaa9f9e82614fd8d35c11b8cdfe850b9a49210dcc6356"
+    },
+    "agent/2026-10-14-10-00-initial-analysis-mock-model": {
+      "content_hash": "54feeeb8a2593570c023fe5d8c2d9870a88648d5d06d4397107bf3f5158300b4",
+      "subtree_hash": "84deb8cd0056bfa852214d740a35fda32f36bfac9e79a2edfec36fe3790b1b04"
+    },
+    "agent/2026-10-14-10-00-initial-analysis-mock-model/initial-assessment": {
+      "content_hash": "0d7d42e86b7b79e3eb17413749f328d2ee2840eaa76a6c6d333146adbb99250d",
+      "subtree_hash": "5e520bf4aaa21f8e90ade08fdd7bdd2a82906cc300e09c9e2e2e1a1d69be78c4"
+    },
+    "arch-overview": {
+      "content_hash": "e7f2340a99b87f45a9cc73a8c11d846587d1091fea107d90a1c6416b0bb6ac6a",
+      "subtree_hash": "0310e8b310e6e1d90970c1173bb14135e18a18ed7bbef36a7dac857591d96919"
+    },
+    "project-alpha": {
+      "content_hash": "44496dc78a173201d89acb01e0064ba0cb3a62b0fe59e001315b57d4cdd597d8",
+      "subtree_hash": "984b6b4fc127754aa84f481abbaf6d097177b74d775c5dd136b7db7295a87acb"
+    },
+    "project-alpha/architecture-overview/networking-layer": {
+      "content_hash": "db67bad63bce46b86db03f9623b03e08da5274a7ce43af3545275638d6544396",
+      "subtree_hash": "55bd3a15e1b659a1ef1572cff7177270fa8762be7861b1eaf8ee693ea53caae3"
+    },
+    "project-alpha/core-tasks": {
+      "content_hash": "467ee89a73564bcdd5f95ca5a0799f9083a8a01f82a3f5b18ce826b5143957cc",
+      "subtree_hash": "1d5781f8a82afae43a24ba17028363788a7b6684a9c0f15d4356a75bc170c5b3"
+    },
+    "project-alpha/core-tasks/todo-task-2-emacs-mode": {
+      "content_hash": "3bf839327b9b64da5acf0a638768299587e15bf1a0593d0c742eab778ef4fdaf",
+      "subtree_hash": "1b7fdeb287d776d09af4685ee388619099d8650bd68cb62bda41a0150861c16a"
+    },
+    "task-engine": {
+      "content_hash": "fa6bcd32363a59c0509b138f007e65807e1d98c4b38733c3fba6bb51fd0693fb",
+      "subtree_hash": "4d430cf833bbb562fd46a2433077ab3f0e41edca89933ae17f5558728247fb20"
+    }
+  }
+}

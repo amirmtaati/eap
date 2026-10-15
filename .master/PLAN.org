@@ -79,21 +79,21 @@ Local commits only. Master runs gates itself. Reviewer is never the implementer.
 :DEPENDS: B1
 :SCOPE: oa-engine/docs/** oa-engine/testdata/protocol/**
 :END:
-*** TODO E2 internal/events encoder + oa-mockrouter
+*** DONE E2 internal/events encoder + oa-mockrouter
 :PROPERTIES:
 :REPO: oa-engine
 :ROLE: implementer-go
 :DEPENDS: C0
 :SCOPE: oa-engine/internal/events/** oa-engine/cmd/oa-mockrouter/**
 :END:
-*** TODO E3 internal/provider: models list, SSE chat, error mapping
+*** DONE E3 internal/provider: models list, SSE chat, error mapping
 :PROPERTIES:
 :REPO: oa-engine
 :ROLE: implementer-go
 :DEPENDS: E2
 :SCOPE: oa-engine/internal/provider/**
 :END:
-*** TODO E4 oa models / oa chat commands, cancellation, security refusal
+*** DONE E4 oa models / oa chat commands, cancellation, security refusal
 :PROPERTIES:
 :REPO: oa-engine
 :ROLE: implementer-go

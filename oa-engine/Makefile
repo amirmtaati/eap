@@ -4,6 +4,7 @@
 
 build:
 	go build -o bin/oa ./cmd/oa
+	go build -o bin/oa-mockrouter ./cmd/oa-mockrouter
 
 test:
 	go test ./...

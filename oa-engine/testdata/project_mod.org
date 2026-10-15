@@ -1,0 +1,37 @@
+#+TITLE: Project Alpha
+#+AUTHOR: Lead Developer
+
+* Project Alpha :ctx:
+This is the main root context for Project Alpha.
+We are building a distributed system with an Emacs client.
+
+** Architecture Overview :ctx:
+:PROPERTIES:
+:CUSTOM_ID: arch-overview
+:STATUS: in-progress
+:END:
+The architecture consists of a Go engine and an Emacs Lisp interface.
+Communication happens via standard I/O (stdin/stdout) using NDJSON events.
+UPDATED: Added streaming provider support for 9router.
+
+*** Networking Layer
+Handles HTTP SSE connections to OpenAI-compatible endpoints.
+Guards against unencrypted HTTP on non-loopback hosts.
+
+** Core Tasks
+*** TODO Task 1: Engine Pipeline :backend:urgent:
+:PROPERTIES:
+:ID: task-engine
+:END:
+Implement parser, snapshot, delta, and prompt assembly.
+
+*** TODO Task 2: Emacs Mode :frontend:
+Implement oa-mode and output buffer rendering.
+
+*** TODO Task 3: Integration Tests :qa:
+Verify end-to-end communication with oa-mockrouter.
+
+* Agent :agent:
+** 2026-10-14 10:00 Initial Analysis (mock-model)
+*** Initial Assessment
+Project skeleton is established. Next step is completing the engine tests.
