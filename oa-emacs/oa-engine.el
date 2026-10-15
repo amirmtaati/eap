@@ -127,6 +127,19 @@ Returns cons (EXIT-CODE . OUTPUT-OR-ERROR)."
   "Sentinel for PROC to handle unexpected termination."
   (let ((callbacks (process-get proc :callbacks)))
     (unless (process-live-p proc)
+      ;; Flush any remaining trailing line if process exited cleanly
+      (let ((partial (string-trim (or (process-get proc :partial-line) ""))))
+        (when (and partial (not (string-empty-p partial)))
+          (process-put proc :partial-line "")
+          (condition-case nil
+              (let* ((ev (json-parse-string partial :object-type 'plist))
+                     (type (plist-get ev :event)))
+                (pcase type
+                  ("done" (when-let* ((cb (plist-get callbacks :on-done)))
+                            (funcall cb (plist-get ev :finish_reason))))
+                  ("error" (when-let* ((cb (plist-get callbacks :on-error)))
+                             (funcall cb (plist-get ev :kind) (plist-get ev :message))))))
+            (error nil))))
       (let ((code (process-exit-status proc)))
         (when-let* ((cb (plist-get callbacks :on-exit)))
           (funcall cb code event))))))
@@ -150,11 +163,13 @@ Returns process object."
          (proc-env (if api-key
                        (cons (format "OA_API_KEY=%s" api-key) process-environment)
                      process-environment))
+         (log-buf (get-buffer-create "*oa-log*"))
          (proc (let ((process-environment proc-env))
                  (make-process
                   :name "oa-chat"
                   :command (cons bin args)
                   :connection-type 'pipe
+                  :stderr log-buf
                   :filter #'oa-engine--filter-ndjson
                   :sentinel #'oa-engine--sentinel
                   :noquery t))))
