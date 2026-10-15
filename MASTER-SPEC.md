@@ -676,7 +676,7 @@ Starts after C0 (works against fixtures and a fake engine); real-engine integrat
 
 ### M5+ (future, not in v0.1)
 
-Agent tool loop (read/grep/apply-patch with diff review), multi-file loader and link roles, token budgeting, MELPA packaging.
+Agent tool loop (read/grep/apply-patch with diff review), multi-file loader and link roles, token budgeting, MELPA packaging. Detailed architectural guide and implementation blueprint for these capabilities are specified in `AGENTIC-SPEC.md`.
 
 Other repos from section 17 come online when their trigger fires (17.8). The expected order is: `oa-templates`, `oa-docs`, and `oa-eval` (after the agent loop exists); then the extractions `oa-protocol` and `oa-testkit`; then any further clients, the `oa-agent` split, and `oa-packaging`. Each activation is its own task set, started by an architect note and approved by the human.
 
