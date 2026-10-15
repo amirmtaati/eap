@@ -19,8 +19,10 @@
     (should (string-match-p "\\* Preserved inside block" output))))
 
 (ert-deftest oa-test-config-key-resolution ()
-  "Test resolving API keys from env and none."
+  "Test resolving API keys from env, direct paste, and none."
   (should (null (oa-config-resolve-key '(:type none))))
+  (should (equal "direct-secret"
+                 (oa-config-resolve-key '(:type direct :value "direct-secret"))))
   (setenv "OA_TEST_SECRET_KEY" "secret123")
   (should (equal "secret123"
                  (oa-config-resolve-key '(:type env :name "OA_TEST_SECRET_KEY")))))

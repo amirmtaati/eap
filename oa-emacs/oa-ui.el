@@ -21,6 +21,7 @@
 (declare-function oa-accept "oa" ())
 (declare-function oa-cancel "oa" ())
 (declare-function oa-add-endpoint "oa" ())
+(declare-function oa-set-key "oa" (&optional key))
 (declare-function oa-refresh-models "oa" ())
 
 (defvar-local oa-ui--current-state "idle"
@@ -140,7 +141,8 @@
     ("r" "Refresh cache" oa-refresh-models)]
    ["Endpoint"
     ("e" "Select endpoint" oa-select-endpoint)
-    ("E" "Add endpoint" oa-add-endpoint)]
+    ("E" "Add endpoint" oa-add-endpoint)
+    ("K" "Paste API key" oa-set-key)]
    ["Output & Actions"
     ("o" "Show output" oa-show-output)
     ("a" "Accept response" oa-accept)

@@ -140,6 +140,7 @@ or `manual' (wait for explicit `oa-accept')."
   "Resolve API key string from KEY-SOURCE plist, or return nil."
   (pcase (plist-get key-source :type)
     ('none nil)
+    ((or 'direct 'raw 'paste) (plist-get key-source :value))
     ('env (let ((var (plist-get key-source :name)))
             (and var (getenv var))))
     ('auth-source

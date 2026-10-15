@@ -30,6 +30,11 @@ disabled.
 (autoload 'oa-maybe-enable "oa"
 "Enable `oa-mode' if current buffer is marked as an Org Agent document.
 Checks for `#+OA: t' keyword or an adjacent `.oa/' directory.")
+(autoload 'oa-set-key "oa"
+"Directly set or paste the API key for the active endpoint.
+If KEY is not provided, prompt in the minibuffer.
+
+(fn &optional KEY)" t)
 (autoload 'oa-add-endpoint "oa"
 "Interactively add a new endpoint configuration with validation." t)
 (autoload 'oa-refresh-models "oa"
@@ -79,6 +84,7 @@ FOCUS-LINE optionally restricts context to enclosing headline.
 (autoload 'oa-doctor "oa-ui"
 "Inspect system configuration and print diagnostic report." t)
 (register-definition-prefixes "oa-ui" '("oa-"))
+
 
 ;;; End of scraped data
 

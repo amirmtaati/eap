@@ -19,10 +19,13 @@
 
 (defun oa-engine-find-binary ()
   "Locate the `oa' executable or signal a user error with build instructions."
-  (or (executable-find oa-engine-program)
-      (let ((local (expand-file-name "../oa-engine/bin/oa"
-                                     (file-name-directory (or load-file-name buffer-file-name "")))))
-        (and (file-executable-p local) local))
+  (or (and (file-name-absolute-p oa-engine-program)
+           (file-executable-p oa-engine-program)
+           oa-engine-program)
+      (executable-find oa-engine-program)
+      (let* ((lib (locate-library "oa-engine"))
+             (local (and lib (expand-file-name "../oa-engine/bin/oa" (file-name-directory lib)))))
+        (and local (file-executable-p local) local))
       (user-error
        "Engine \"%s\" not found. Build it (cd oa-engine && make build) and customize `oa-engine-program'"
        oa-engine-program)))
@@ -72,11 +75,12 @@ Returns cons (EXIT-CODE . OUTPUT-OR-ERROR)."
                  args))
          (args (append args (list "-"))))
     (with-temp-buffer
-      (let* ((code (with-temp-buffer
+      (let* ((out-buf (current-buffer))
+             (code (with-temp-buffer
                      (insert text)
                      (apply #'call-process-region
                             (point-min) (point-max)
-                            bin nil (list (current-buffer) t) nil
+                            bin nil (list out-buf nil) nil
                             args))))
         (cons code (string-trim (buffer-string)))))))
 

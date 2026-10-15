@@ -39,6 +39,7 @@
     (define-key map (kbd (concat oa-keymap-prefix " m")) #'oa-select-model)
     (define-key map (kbd (concat oa-keymap-prefix " e")) #'oa-select-endpoint)
     (define-key map (kbd (concat oa-keymap-prefix " E")) #'oa-add-endpoint)
+    (define-key map (kbd (concat oa-keymap-prefix " K")) #'oa-set-key)
     (define-key map (kbd (concat oa-keymap-prefix " r")) #'oa-refresh-models)
     (define-key map (kbd (concat oa-keymap-prefix " o")) #'oa-show-output)
     (define-key map (kbd (concat oa-keymap-prefix " k")) #'oa-cancel)
@@ -80,6 +81,24 @@ Checks for `#+OA: t' keyword or an adjacent `.oa/' directory."
     (expand-file-name "snapshot.json" temporary-file-directory)))
 
 ;;;###autoload
+(defun oa-set-key (&optional key)
+  "Directly set or paste the API key for the active endpoint.
+If KEY is not provided, prompt in the minibuffer."
+  (interactive)
+  (let ((ep (oa-config-active-endpoint)))
+    (unless ep
+      (user-error "No active endpoint. Use `oa-add-endpoint' first"))
+    (let* ((name (plist-get ep :name))
+           (val (or key (string-trim (read-string (format "API key for %s (paste here): " name))))))
+      (if (string-empty-p val)
+          (user-error "Key cannot be empty")
+        (oa-config-update-endpoint
+         name
+         (lambda (e)
+           (plist-put e :key-source (list :type 'direct :value val))))
+        (message "API key for %s updated successfully." name)))))
+
+;;;###autoload
 (defun oa-add-endpoint ()
   "Interactively add a new endpoint configuration with validation."
   (interactive)
@@ -88,18 +107,21 @@ Checks for `#+OA: t' keyword or an adjacent `.oa/' directory."
                (read-string "Endpoint base URL (e.g. http://localhost:20128/v1): "
                             "http://localhost:20128/v1")
                "/"))
-         (auth-type (intern
-                     (completing-read "Authentication source: "
-                                      '("none" "env" "auth-source") nil t nil nil "none")))
+         (auth-type (completing-read "Authentication source: "
+                                     '("paste-key" "env" "auth-source" "none") nil t nil nil "paste-key"))
          (key-source
           (pcase auth-type
-            ('none (list :type 'none))
-            ('env
+            ("paste-key"
+             (let ((raw (read-string "Paste API key (minibuffer): ")))
+               (list :type 'direct :value (string-trim raw))))
+            ("env"
              (let ((var (read-string "Environment variable name: " "OA_API_KEY")))
                (list :type 'env :name var)))
-            ('auth-source
+            ("auth-source"
              (let ((host (read-string "auth-source host: " "localhost")))
-               (list :type 'auth-source :host host)))))
+               (list :type 'auth-source :host host)))
+            ("none"
+             (list :type 'none))))
          (api-key (oa-config-resolve-key key-source url)))
     (message "Validating endpoint '%s'..." name)
     (condition-case err

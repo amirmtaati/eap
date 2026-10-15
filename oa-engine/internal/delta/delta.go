@@ -17,6 +17,23 @@ type Result struct {
 	Unchanged int      // in both, content hash matches
 }
 
+// isAgent reports whether n or any of its ancestors is an Agent node.
+// Agent response trees (* Agent :agent:) are conversation history, not document deltas.
+func isAgent(n *org.Node) bool {
+	for _, t := range n.Tags {
+		if t == "agent" {
+			return true
+		}
+	}
+	if n.Key == "agent" || n.Title == "Agent" {
+		return true
+	}
+	if n.Parent != nil {
+		return isAgent(n.Parent)
+	}
+	return false
+}
+
 // Compute diffs doc against snap.
 func Compute(doc *org.Document, snap *snapshot.Snapshot) Result {
 	r := Result{Added: []string{}, Modified: []string{}, Deleted: []string{}}
@@ -27,6 +44,9 @@ func Compute(doc *org.Document, snap *snapshot.Snapshot) Result {
 	var walk func(ns []*org.Node)
 	walk = func(ns []*org.Node) {
 		for _, n := range ns {
+			if isAgent(n) {
+				continue
+			}
 			if e, ok := inSnap(n.Key); !ok {
 				r.Added = append(r.Added, n.Key)
 			} else if e.ContentHash == n.ContentHash {
@@ -40,16 +60,25 @@ func Compute(doc *org.Document, snap *snapshot.Snapshot) Result {
 	walk(doc.Roots)
 
 	inDoc := make(map[string]bool, len(doc.All))
-	for k := range doc.All {
-		inDoc[k] = true
+	for k, n := range doc.All {
+		if !isAgent(n) {
+			inDoc[k] = true
+		}
 	}
 	for k := range snap.Nodes {
+		if k == "agent" || isAgentKey(k) {
+			continue
+		}
 		if !inDoc[k] {
 			r.Deleted = append(r.Deleted, k)
 		}
 	}
 	sort.Strings(r.Deleted)
 	return r
+}
+
+func isAgentKey(k string) bool {
+	return k == "agent" || len(k) > 6 && k[:6] == "agent/"
 }
 
 // ResolveFocus resolves exactly one of focusKey / focusLine to a node.

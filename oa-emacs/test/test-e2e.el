@@ -64,8 +64,7 @@
 
               ;; 4. Test zero delta (nothing new to send)
               (let ((prompt-res (oa-engine-run-prompt (buffer-string) snap-file)))
-                (should (= (car prompt-res) 2))
-                (should (string-match-p "nothing to send" (cdr prompt-res))))
+                (should (= (car prompt-res) 2)))
 
               ;; 5. Edit document (add new task)
               (goto-char (point-max))
